@@ -8,13 +8,17 @@ from contextlib import contextmanager
 import psycopg2
 import psycopg2.extras
 
+from config import config
+
 
 @contextmanager
 def get_kyruus_db_cursor():
     env = os.environ.get('env') # current
-    database = conf.get('KYRUUS_DB_NAME')
-    username = conf.get('KYRUUS_USER_NAME')
-    pw = conf.get('KYRUUS_DB_PASSWORD')
+    conf = config.get(env)
+    postgres_conf = conf['postgres']
+    database = postgres_conf.get('db')
+    username = postgres_conf.get('user')
+    pw = postgres_conf.get('pw')
     conn = psycopg2.connect('dbname={db} user={u} password={w}'.format(db=database, u=username, w=pw))
     cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     return cursor

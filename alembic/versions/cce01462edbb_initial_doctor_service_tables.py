@@ -38,8 +38,8 @@ def upgrade():
         doctor_id REFERENCE doctor(id)
         location_id REFERENCE location(id)
         day TEXT NOT NULL
-        start_time TIMESTAMP WITH TIME ZONE
-        end_time TIMESTAMP WITH TIME ZONE
+        start_time TIME WITH TIME ZONE
+        end_time TIME WITH TIME ZONE
         );
 
         """
