@@ -1,17 +1,20 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import unicode_literals
 from __future__ import print_function
+from __future__ import unicode_literals
 
 from datetime import datetime
-from flask import Blueprint, jsonify, Flask, render_template, request
-from version import VERSION
+
+from flask import Blueprint, jsonify, request
+
 from cursor import get_kyruus_db_cursor
+from util import safe_get
+from version import VERSION
 
-example_api = Blueprint('example_api', __name__, url_prefix='')
+kyruus_api = Blueprint('kyruus_api', __name__, url_prefix='')
 
 
-@example_api.route('/', methods=['GET'])
+@kyruus_api.route('/', methods=['GET'])
 def status():
     resp = {
         'name': 'doctor_service',
@@ -20,7 +23,8 @@ def status():
 
     return jsonify(resp), 200
 
-@example_api.route('/doctor/<str:doctor>', methods=['GET'])
+
+@kyruus_api.route('/doctor/<str:doctor>', methods=['GET'])
 def get_doctor_schedule(doctor):
     sql = """SELECT dl.name AS location_name, ds.day, ds.start_time, ds_end_time
              FROM doctor d
@@ -37,7 +41,8 @@ def get_doctor_schedule(doctor):
 
     return jsonify(resp), 200
 
-@example_api.route('/appointment/book', methods=['POST'])
+
+@kyruus_api.route('/appointment/book', methods=['POST'])
 def book_appointment():
     data = request.get_json()
     doctor = data.get('doctor', '')
@@ -72,16 +77,7 @@ def book_appointment():
     return 200
 
 
-def safe_get(cursor, sql, exception_message, **replacements):
-    cursor.execute(sql, replacements)
-    result = cursor.fetchone()
-    if not result:
-        raise Exception(exception_message.format(**replacements))
-    else:
-        return result
-
-
-@example_api.route('/appointment/cancel', method=['POST'])
+@kyruus_api.route('/appointment/cancel', method=['POST'])
 def cancel_appointment():
     data = request.get_json()
     doctor = data.get('doctor', '')
@@ -101,7 +97,7 @@ def cancel_appointment():
     return 200
 
 
-@example_api.route('/doctor/<int:doctorid>', methods=['GET'])
+@kyruus_api.route('/doctor/<int:doctorid>', methods=['GET'])
 def get_doctor_details(doctorid):
     sql = """SELECT d.*
              FROM doctor d

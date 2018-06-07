@@ -16,4 +16,4 @@ class BaseTestCase(TestCase):
         return app
 
     def setUp(self):
-        pass
+        self.client = self.create_app()
